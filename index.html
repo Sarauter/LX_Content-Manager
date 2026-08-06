@@ -463,52 +463,9 @@
     .main{ padding: 30px 22px 80px; }
   }
 
-.auth-gate{
-  position:fixed; inset:0; z-index:9999;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--bg); padding:24px;
-}
-.auth-card{
-  width:100%; max-width:360px;
-  background:var(--surface); border:1px solid var(--border); border-radius:14px;
-  padding:32px 28px; display:flex; flex-direction:column; gap:14px;
-  box-shadow:0 12px 40px rgba(0,0,0,.12);
-}
-.auth-eyebrow{ font-size:.72rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--azul); margin:0; }
-.auth-title{ font-family:'Montserrat','Inter',sans-serif; font-size:1.5rem; font-weight:700; color:var(--navy); margin:0; }
-.auth-lead{ font-size:.86rem; color:var(--ink-muted); margin:0 0 6px; }
-.auth-label{ display:flex; flex-direction:column; gap:6px; font-size:.8rem; font-weight:700; color:var(--ink); }
-.auth-label input{
-  font-family:'Inter',-apple-system,sans-serif; font-weight:400; font-size:.95rem;
-  padding:10px 12px; border:1px solid var(--border); border-radius:8px;
-  background:var(--bg); color:var(--ink);
-}
-.auth-label input:focus-visible{ outline:2px solid var(--cyan); outline-offset:1px; }
-.auth-submit{
-  margin-top:6px; font-weight:700; font-size:.92rem;
-  padding:11px 16px; border:none; border-radius:8px; cursor:pointer;
-  background:var(--navy); color:#fff;
-}
-.auth-submit:hover{ background:var(--azul); }
-.auth-error{ font-size:.82rem; color:var(--naranja); margin:0; }
 </style>
 </head>
 <body>
-<div id="auth-gate" class="auth-gate">
-  <form id="auth-form" class="auth-card" autocomplete="on">
-    <p class="auth-eyebrow">LADX</p>
-    <h1 class="auth-title">Acceso restringido</h1>
-    <p class="auth-lead">Contenido interno del proyecto — ingresa con las credenciales que te compartio Andrea.</p>
-    <label class="auth-label">Usuario
-      <input type="text" id="auth-user" name="username" autocomplete="username" required>
-    </label>
-    <label class="auth-label">Contrasena
-      <input type="password" id="auth-pass" name="password" autocomplete="current-password" required>
-    </label>
-    <button type="submit" class="auth-submit">Entrar</button>
-    <p class="auth-error" id="auth-error" hidden>Usuario o contrasena incorrectos.</p>
-  </form>
-</div>
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">
@@ -1963,41 +1920,6 @@
     setupNavExpand();
     setupPendientesOverview();
   }
-})();
-
-(function(){
-  var EXPECTED_HASH = "1658b3f36de0ecb309ca7ab3027d3d661a861659e980e53fe8d8225ab104fefb";
-  var STORAGE_KEY = "ladx-auth-ok-v1";
-  var gate = document.getElementById("auth-gate");
-  if(!gate) return;
-
-  function hex(buffer){
-    return Array.prototype.map.call(new Uint8Array(buffer), function(b){ return b.toString(16).padStart(2, "0"); }).join("");
-  }
-  async function sha256(str){
-    var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-    return hex(buf);
-  }
-
-  if(localStorage.getItem(STORAGE_KEY) === "1"){
-    gate.remove();
-    return;
-  }
-
-  var form = document.getElementById("auth-form");
-  var errorEl = document.getElementById("auth-error");
-  form.addEventListener("submit", async function(e){
-    e.preventDefault();
-    var user = document.getElementById("auth-user").value.trim();
-    var pass = document.getElementById("auth-pass").value;
-    var hash = await sha256(user + ":" + pass);
-    if(hash === EXPECTED_HASH){
-      try{ localStorage.setItem(STORAGE_KEY, "1"); }catch(e){}
-      gate.remove();
-    } else {
-      errorEl.hidden = false;
-    }
-  });
 })();
 </script>
 </body>
